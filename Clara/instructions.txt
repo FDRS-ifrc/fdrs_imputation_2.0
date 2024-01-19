@@ -1,0 +1,4 @@
+git pull //synchronizes other contributes changes
+git add --a //adds all (--a) changes made by you to commit
+git commit -m "Description of change" 
+git push //pushes the changes committed to GitHub
