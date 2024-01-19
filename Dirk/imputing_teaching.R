@@ -1,6 +1,6 @@
 #loading data
 
-install.packages("data.table")
+#install.packages("data.table")
 library(data.table)
 library(dplyr)
 
@@ -19,15 +19,14 @@ data=data %>% filter(kpi=="KPI_PeopleVol_Tot")
 
 data %>% group_by(year) %>% count()
 
+#count missing values
+data %>% group_by(year) %>% filter(is.na(value)) %>% count()
+
 #Total Volunteers per year
 
 data %>% group_by(year) %>% summarise(value=sum(value,na.rm=TRUE))
 
-#read NS data
-ns=fread()
 
 #simple forecasting regression
-
 summary(data$value)
 
-sum(is.na(data$value))
