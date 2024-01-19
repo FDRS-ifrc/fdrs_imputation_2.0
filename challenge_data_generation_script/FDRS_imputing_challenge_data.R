@@ -75,7 +75,7 @@ for(kpi in kpi_list){
 }
 
 for(year in 2010:2022){
-  fwrite(data %>% filter(source!="I",year==.env$year) %>% select(-source) %>% mutate(kpi=gsub("_IP","",kpi)),paste("../challenge_data_",year,".csv",sep=""))
+  fwrite(data %>% filter(source!="I",year==.env$year) %>% select(-source) %>% mutate(kpi=gsub("_IP","",kpi)),paste("../challenge_data/challenge_data_",year,".csv",sep=""))
 }
 
 #for submissions date
@@ -91,5 +91,11 @@ for(year in 2021:2021){
     filter(value.y<"2022-07-01") %>% 
     select(-value.y) %>% 
     rename(value=value.x)
-  fwrite(data_jun,paste("../challenge_data_",year,"_jun.csv",sep=""))
+  fwrite(data_jun,paste("../challenge_data/challenge_data_",year,"_jun.csv",sep=""))
 }
+
+#National Societies
+fwrite(fromJSON(paste("https://data-api.ifrc.org/api/entities/ns?apikey=",key,sep="")),"../challenge_data/ns_data.csv")
+
+#Indicators
+fwrite(fromJSON(paste("https://data-api.ifrc.org/api/indicator?apikey=",key,sep="")),"../challenge_data/kpi_data.csv")
