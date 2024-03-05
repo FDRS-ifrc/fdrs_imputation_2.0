@@ -39,13 +39,13 @@ fwrite(data_submission,r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fd
 
 
 
-
+data_submission=fread(r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fdrs_imputation_2.0\Dirk\prediction_22.csv)")
 #Expected format: csv with doncode - kpi - value
 submission=function(data_submission){
   data22=fread(r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fdrs_imputation_2.0\challenge_data\challenge_data_2022.csv)")
   
-  #remove NAs
-  data22=data22 %>% filter(!is.na(value)) %>% rename("real_value"="value")
+  #remove NAs and zeros
+  data22=data22 %>% filter(!is.na(value),value!=0) %>% rename("real_value"="value")
   data_submission=data_submission %>% filter(!is.na(value))%>% rename("submission_value"="value")
   
   #left join with result
