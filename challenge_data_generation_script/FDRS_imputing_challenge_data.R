@@ -67,7 +67,7 @@ kpi_list=c(
 
 data=c()
 for(kpi in kpi_list){
-  for(year in 2022:2022){
+  for(year in 2010:2022){
     print(paste(kpi,year))
     api=fromJSON(paste("https://data-api.ifrc.org/api/KpiImputedValue?kpicode=",kpi,"&year=",year,"&apiKey=",key,sep=""))
     if(length(api)>0){
@@ -86,14 +86,14 @@ data=ns %>%
   cross_join(data %>% distinct(kpi)) %>% 
   left_join(data,by=c("doncode","kpi","year"))
 
-for(year in 2022:2022){
+for(year in 2010:2022){
   fwrite(data %>% filter(year==.env$year),paste("../challenge_data/challenge_data_",year,".csv",sep=""))
 }
 
 #for submissions date
 data_submitted=c()
 kpi='KPI_FirstSubmitDate'
-for(year in 2021:2021){
+for(year in 2021:2022){
   data_submitted=rbind.data.frame(data_submitted,cbind(year,fromJSON(paste("https://data-api.ifrc.org/api/KpiImputedValue?kpicode=",kpi,"&year=",year,"&apiKey=",key,sep=""))))
   #join
   data_jun=data %>% filter(year==.env$year) %>% 
