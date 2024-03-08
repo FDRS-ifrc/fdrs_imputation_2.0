@@ -93,7 +93,7 @@ for(year in 2010:2022){
 #for submissions date
 data_submitted=c()
 kpi='KPI_FirstSubmitDate'
-for(year in 2021:2022){
+for(year in 2022:2022){
   data_submitted=rbind.data.frame(data_submitted,cbind(year,fromJSON(paste("https://data-api.ifrc.org/api/KpiImputedValue?kpicode=",kpi,"&year=",year,"&apiKey=",key,sep=""))))
   #join
   data_jun=data %>% filter(year==.env$year) %>% 

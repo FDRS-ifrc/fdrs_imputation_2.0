@@ -3,6 +3,7 @@
 #install.packages("data.table")
 library(data.table)
 library(dplyr)
+options(scipen = 50)
 
 #load 3 years
 data19=fread(r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fdrs_imputation_2.0\challenge_data\challenge_data_2019.csv)")
@@ -40,6 +41,7 @@ fwrite(data_submission,r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fd
 
 
 data_submission=fread(r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fdrs_imputation_2.0\Dirk\prediction_22.csv)")
+data_submission=fread(r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fdrs_imputation_2.0\Baldur\Baldur_baseline_submission_BayesianRidge.csv)")
 #Expected format: csv with doncode - kpi - value
 submission=function(data_submission){
   data22=fread(r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fdrs_imputation_2.0\challenge_data\challenge_data_2022.csv)")
@@ -50,20 +52,21 @@ submission=function(data_submission){
   
   #left join with result
   
-  join=data22 %>% left_join(data_submission,by=c("doncode","kpi"))
+  join=data22 %>% left_join(data_submission,by=c("doncode","kpi"))%>% mutate(submission_value=round(submission_value,0))
   
   #count missing joins percentage
-  na=sum(is.na(join$submission_value))
+  missing=join %>% group_by(kpi) %>% summarise(na=sum(is.na(submission_value),is.na=TRUE))
   join=join%>% filter(!is.na(submission_value))
   
   #R2
+  for(kpi_name in join %>% distinct(kpi) %>% pull(kpi)){
+    model = lm(real_value~submission_value, data=join %>% filter(kpi==kpi_name))
+    r2=summary(model)$r.squared
   
-  model = lm(real_value~submission_value, data=join)
-  summary(model)$r.squared
-  
-  #MAPE
-  mean(ifelse(abs(join$real_value-join$submission_value)/join$real_value==Inf,100,abs(join$real_value-join$submission_value)/join$real_value),na.rm=TRUE)
-  
+    #MAPE
+    mape=join%>% filter(kpi==kpi_name) %>% summarise(mape=mean(abs(real_value-submission_value)/real_value)) %>% pull(mape)
+    print(paste0(kpi_name,": R2 = ",r2," and MAPE = ",mape,", missing imputations = ",missing %>% filter(kpi==kpi_name) %>% pull(na),"/",join%>% filter(kpi==kpi_name) %>% nrow()))
+  }
 }
 
 
