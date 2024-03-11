@@ -41,10 +41,17 @@ fwrite(data_submission,r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fd
 
 
 data_submission=fread(r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fdrs_imputation_2.0\Dirk\prediction_22.csv)")
-data_submission=fread(r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fdrs_imputation_2.0\Baldur\Baldur_baseline_submission_BayesianRidge.csv)")
+#data_submission=fread(r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fdrs_imputation_2.0\Baldur\Baldur_baseline_submission_BayesianRidge.csv)")
+june=FALSE
 #Expected format: csv with doncode - kpi - value
-submission=function(data_submission){
+#submission=function(data_submission){
   data22=fread(r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fdrs_imputation_2.0\challenge_data\challenge_data_2022.csv)")
+  #exclude pre-june data
+  if(june){
+    data_22_jun=fread(r"(C:\Users\dirk.merkhof\OneDrive - IFRC\Documents\git\fdrs_imputation_2.0\challenge_data\challenge_data_2022_jun.csv)") %>% 
+      filter(!is.na(value))
+    data22=data22 %>% anti_join(data_22_jun,by=c("doncode","kpi"))
+  }
   
   #remove NAs and zeros
   data22=data22 %>% filter(!is.na(value),value!=0) %>% rename("real_value"="value")
@@ -65,9 +72,10 @@ submission=function(data_submission){
   
     #MAPE
     mape=join%>% filter(kpi==kpi_name) %>% summarise(mape=mean(abs(real_value-submission_value)/real_value)) %>% pull(mape)
-    print(paste0(kpi_name,": R2 = ",r2," and MAPE = ",mape,", missing imputations = ",missing %>% filter(kpi==kpi_name) %>% pull(na),"/",join%>% filter(kpi==kpi_name) %>% nrow()))
+    print(paste0(kpi_name,": R2 = ",r2," and MAPE = ",mape,", missing imputations = ",
+                 missing %>% filter(kpi==kpi_name) %>% pull(na),"/",join%>% filter(kpi==kpi_name) %>% nrow(),", JUNE = ",june))
   }
-}
+#}
 
 
 
